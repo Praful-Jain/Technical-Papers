@@ -1,4 +1,7 @@
 # JAVASCRIPT
+- JavaScript is a high-level, interpreted programming language.
+- It is primarily known for adding interactivity to web pages, allowing dynamic content and behavior.
+- JavaScript is a core technology for building modern, interactive, and dynamic web applications.
 
 ## Loops
 1. for Loop: Used when you know the number of iterations.
