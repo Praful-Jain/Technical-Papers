@@ -79,7 +79,9 @@ Conclusion --
   - **manage.py**  --> **Main** file of our project
 
 
-# Creating a Django app
+
+
+# Creating a Django app  (Refer Geeky Shows -> Video-33)
 - In here, creating an app means creating a separate module which will perform a specific functionality of our project.
 - Steps 
 1. **Create a Django App:**
@@ -102,6 +104,9 @@ Conclusion --
 3. **Define Models:**
    - In your app directory, open the `models.py` file and **define your data models using Django's ORM**. For example:
    - Here we imported **models module.**  The main component within the "models" module is the **Model class** ( it provides built-in functionalities, fields ( eg..CharField, IntegerField, etc )), which is used to create classes representing database tables and their fields.
+   - Each model which we create is a Python class that **subclasses django.db.models.Model.**
+   - Each attribute of the model represents a database field.
+   - Table name -- **ApplicationName_ClassName**
    ```python
    from django.db import models
 
@@ -115,12 +120,33 @@ Conclusion --
    - Django uses migrations to manage changes to your database schema. Run the following commands in the root folder to apply the initial migrations:
 
    ```bash
-   python manage.py makemigrations
-   python manage.py migrate
+   python manage.py makemigrations  # model classes -> sql queries/statements
+   python manage.py migrate         # sql query/statement -> table in database
    ```
 
+## Note ['Model' built-in class of 'models' module]
+- Built-in field options -
+  - null = True/False
+  - default = 'default_value'
+  - blank = True/False
+  - verbose_name = 'Student Name'
+  - primary_key = True/False
+  - unique = True/False ....
+- Built-in field Types
+  - IntegerField
+  - BigIntegerField
+  - AutoField
+  - FloatField
+  - CharField
+  - TextField
+  - BooleanField
+  - EmailField
+  - URLField
+  - BinaryField
 
-# Migrations
+
+
+# Migrations (Refer Geeky Shows -> Video-33)
 - The initial migrations, often referred to as "default migrations," establish the initial state of your database based on your initial model definitions.
 - In python we define data models in models.py file. Each model class represents structure of a table(rows, columns, datatypes) of the DB.
   
@@ -140,7 +166,9 @@ Conclusion --
 - To synchronise database with our models. (if we added now tables/ model classes in our models.py file)
 
 
-# Object Relational Mapper [ORM]
+
+
+# Object Relational Mapper [ORM] (Refer Geeky Shows -> Video-32)
 - ORM enables applications(our apps) to interact with the databases such as SQLite, MySOL, PostgreSQL,Oracle.
 - **Django works on ORM Pattern and ORM follows object-oriented approach.**
 - ORMs automatically creates a database schema from defined classes/models (in models.py). So, for one who 
@@ -152,9 +180,13 @@ Conclusion --
   easier to change database management system. Hence, ORM inhances portability. 
 - ORMs use **connectors** to connect databases with a web application.
 
-# QuerySet
+
+
+# QuerySet (Refer Geeky Shows -> Video-86)
 - A QuerySet can be defined as a list containing all those objects we have created using the Django model.
 - QuerySet allow us to read the data from the database, filter it and order it.
+- **Syntax-**
+  - ModelClassName.objects.function()
   ```python
   from myapp.models import Person   # from models.py file in myapp folder import Person model/class.
 
@@ -165,13 +197,44 @@ Conclusion --
   # Filter the queryset to get people with age greater than 30
   older_people = Person.objects.filter(age__gt=30)
   ```
-- QuerySets sre generally associated with CRUD operations.
+- QuerySets are generally associated with CRUD operations.
 - **CRUD Http Operations:**
   1. C -> Create -> POST method
   2. R -> Read   -> GET method
   3. U -> Update -> PUT method
   4. D -> Delete -> DELETE method
-  
+ 
+  ```python
+    # Creating a new book
+    new_book = Book.objects.create(title='Example Book', author='John Doe', publication_date='2023-01-01')
+    
+    # Querying for books
+    books = Book.objects.all()
+    
+    # Updating a book
+    book = Book.objects.get(title='Example Book')
+    book.author = 'Jane Doe'
+    book.save()
+    
+    # Deleting a book
+    book.delete()
+    ```
+
+- To see the SQL query created by Django in the backend (to get a QuertSet object) 
+  - obj = Person.objects.get(it=0)
+  - **We can use command ---> print('SQL QUERY:', obj.query)**
+    
+## QuerySet methods:
+  1. ModelClassName.objects.
+  2. .all(), .get(...), .filter(...), .exclude(...), .order_by(...), .reverse(), .distinct()
+  3. .values(), .values(..want specific columns..)  -> converts our **QuerySet of objects into a QuerySet of 
+   dictionaries** containing the object.
+  4. .values_list(), .values(..want specific columns..)   -> method is similar to .values(), but it returns a **QuerySet of tuples** instead of dictionaries.
+  5. QuerySet methods between two query sets:
+     - q1.union(q2)        --> full join (but returns distinct rows only)
+     - q1.intersection(q2) --> innerjoin
+     - q1.difference(q2)   --> left join  (swap q1 & q2 is want q2's left join)
+     - 
 
 # Superuser
 - In Django, a superuser is a user account with special privileges that allow them to access and manage the Django admin interface.
@@ -235,37 +298,12 @@ class MyView(View):
       return render(request,'index.html')    # render(request,html_file_name)
   ```
  - Step4: Then add path to this view in urlpatterns array of urls.py file.
-   
-**5. URL Mapping:**
-- Views are mapped to specific URLs in the urls.py file of your Django app.
-- The **URL dispatcher** is responsible for matching the requested URL to the appropriate view.
-```python
-from django.urls import path
-from .views import my_view
 
-urlpatterns = [
-    path('my-url/', my_view, name='my-url-name'),
-]
-```
 
-# Create Dynamic URLs/Routes in Django
-
-```python
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path("articles/2003/", views.special_case_2003),
-    path("articles/<int:year>/", views.year_archive),
-    path("articles/<data>/", views.show_data),
-    path("articles/<int:year>/<int:month>/", views.month_archive),
-    path("articles/<int:year>/<int:month>/<slug:slug>/", views.article_detail),
-]
-```
-
-# Passing Data from Django View to a Template
+**5. Passing Data from Django View to a Template**
 - For passing data from Django view to a Template first we have to make a dictionary(containing data) in the view function/class and pass that dictionary to the render function as a parameter.
   ```python
+  from django.shortcuts import render
   def homePage(request):
       data = {
           'title' : 'Home Page',
@@ -287,6 +325,33 @@ urlpatterns = [
   }
   ```
 - And in the **html template** whereever we need data we can fetch it using **{{ ... }}**
+
+**6. URL Mapping:**
+- Views are mapped to specific URLs in the urls.py file of your Django app.
+- The **URL dispatcher** is responsible for matching the requested URL to the appropriate view.
+```python
+from django.urls import path
+from .views import my_view
+
+urlpatterns = [
+    path('my-url/', my_view, name='my-url-name'),
+]
+```
+
+**7. Create Dynamic URLs/Routes in Django**
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("articles/2003/", views.special_case_2003),
+    path("articles/<int:year>/", views.year_archive),
+    path("articles/<data>/", views.show_data),
+    path("articles/<int:year>/<int:month>/", views.month_archive),
+    path("articles/<int:year>/<int:month>/<slug:slug>/", views.article_detail),
+]
+```
+
 
 # HTML templates
 **NOTE-  Referring the data sent from the view function to html template**
@@ -401,3 +466,11 @@ urlpatterns = [
 
 
 
+# HighCharts.js Library
+
+- Include the JavaScript files in the <head> section of your web page as shown below.
+  ```html
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  ```
+
+ 
